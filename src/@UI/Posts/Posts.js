@@ -1,5 +1,5 @@
 import { memo, useContext } from 'react'
-import { Flex } from '@chakra-ui/react'
+import { Grid } from '@chakra-ui/react'
 import { PostsContext } from '@Context'
 import { Post } from './components'
 
@@ -9,11 +9,16 @@ const Posts = () => {
     return null
   }
   return (
-    <Flex flexDirection={['column', 'column', 'column', 'row']}>
+    <Grid
+      gap={6}
+      templateColumns="repeat(3, 1fr)"
+      flexDirection={['column', 'column', 'column', 'row']}
+      display={['flex', 'flex', 'flex', 'grid']}
+    >
       {posts.map((post, i) => (
         <Post key={i} />
       ))}
-    </Flex>
+    </Grid>
   )
 }
 
