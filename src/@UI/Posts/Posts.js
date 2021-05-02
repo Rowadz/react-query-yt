@@ -16,7 +16,14 @@ const Posts = () => {
       display={['flex', 'flex', 'flex', 'grid']}
     >
       {posts.map((post, i) => (
-        <Post key={i} />
+        <Post
+          key={i}
+          id={post.id}
+          body={post.body}
+          image={post.image}
+          fullName={post.fullName}
+          archived={post.archived}
+        />
       ))}
     </Grid>
   )

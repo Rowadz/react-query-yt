@@ -5,24 +5,23 @@ import { API_URL } from '@constants'
 import { useQuery } from 'react-query'
 
 const AppHeader = () => {
-  const [loading, setLoading] = useState(false)
-  const [posts, setPosts] = useContext(PostsContext)
+  const [enableFetchingPosts, setEnabled] = useState(false)
+  const [, setPosts] = useContext(PostsContext)
   const toast = useToast()
-  const fetchData = () => {}
 
-  const { isLoading, error, data, refetch: fetchPosts } = useQuery(
-    'repoData',
-    () => fetch(`${API_URL}/posts`).then((res) => res.json()),
-    { enabled: false }
+  const { isLoading, data, isFetching } = useQuery(
+    'fetchingPosts',
+    () => fetch(`${API_URL}/posts?_limit=10&_page=1`).then((res) => res.json()),
+    { enabled: enableFetchingPosts }
+    // { refetchInterval: 1000 }
   )
 
+  console.log({ isLoading, data, isFetching })
   useEffect(() => {
     if (data) {
-      // setPosts(data)
+      setPosts(data)
     }
-  }, [data])
-
-  console.log(isLoading, error, data)
+  }, [data, setPosts])
 
   return (
     <Flex as="nav" flex="1" mb={4} padding="0.5rem" bg="purple.700">
@@ -33,10 +32,9 @@ const AppHeader = () => {
       <Flex>
         <Button
           bg="inherit"
-          isLoading={loading}
+          isLoading={isLoading || isFetching}
           onClick={() => {
-            fetchPosts()
-            setLoading(true)
+            setEnabled(true)
             toast({
               title: 'Fetching posts data',
               description: 'please wait...',
@@ -44,8 +42,7 @@ const AppHeader = () => {
               duration: 3000,
               isClosable: true,
               onCloseComplete() {
-                setLoading(false)
-                setPosts([1, 1, 1, 1, 1, 1])
+                setEnabled(false)
               },
             })
           }}

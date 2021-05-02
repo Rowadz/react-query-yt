@@ -1,7 +1,7 @@
 {
   "description": "The file is generated using https://mohammedal-rowad.github.io/pollux/",
   "scripts": {
-    "dev": "json-server --watch db.json --port 3001"
+    "dev": "json-server --watch db.json --port 3001 --delay 3000"
   },
   "author": "Rowadz",
   "license": "MIT",
