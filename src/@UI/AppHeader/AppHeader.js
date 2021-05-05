@@ -1,50 +1,64 @@
-import { memo, useState, useContext, useEffect } from 'react'
-import { Flex, Heading, Button, useToast } from '@chakra-ui/react'
+import { useState, useEffect, useContext } from 'react'
+import { Button, Flex, Heading, useToast } from '@chakra-ui/react'
 import { PostsContext } from '@Context'
-import { API_URL } from '@constants'
 import { useQuery } from 'react-query'
+import { API_URL } from 'app/constants'
 
 const AppHeader = () => {
-  const [enableFetchingPosts, setEnabled] = useState(false)
-  const [, setPosts] = useContext(PostsContext)
+  const [enabled, setEnabled] = useState(false)
+  const [postsContext, setPostsContext] = useContext(PostsContext)
+  console.log({ postsContext })
   const toast = useToast()
-
-  const { isLoading, data, isFetching } = useQuery(
-    'fetchingPosts',
-    () => fetch(`${API_URL}/posts?_limit=10&_page=1`).then((res) => res.json()),
-    { enabled: enableFetchingPosts }
+  const { isLoading, isFetching, data } = useQuery(
+    ['fetchPosts', postsContext.page],
+    ({ queryKey }) => {
+      const [, page] = queryKey
+      console.log(queryKey)
+      return fetch(`${API_URL}/posts?_limit=10&_page=${page}`)
+        .then((res) => res.json())
+        .finally(() => setEnabled(false))
+    }
+    // { keepPreviousData: false }
+    // { enabled: true }
     // { refetchInterval: 1000 }
   )
 
-  console.log({ isLoading, data, isFetching })
   useEffect(() => {
     if (data) {
-      setPosts(data)
+      setPostsContext({
+        ...postsContext,
+        // data,
+        data: [...postsContext.data, ...data],
+      })
     }
-  }, [data, setPosts])
+  }, [data, setPostsContext])
+
+  useEffect(() => {
+    if (isLoading || isFetching) {
+      toast({
+        title: 'Fetching posts data',
+        description: 'please wait...',
+        status: 'info',
+        duration: 3000,
+        onCloseComplete() {
+          // setEnabled(false)
+        },
+      })
+    }
+  }, [isLoading, isFetching])
 
   return (
-    <Flex as="nav" flex="1" mb={4} padding="0.5rem" bg="purple.700">
+    <Flex as="nav" flex="1" mb="4" padding="0.5rem" bg="purple.700">
       <Flex align="center">
         <Heading size="md">React Query</Heading>
       </Flex>
-      <Flex flexGrow={1} />
+      <Flex flexGrow="1" />
       <Flex>
         <Button
-          bg="inherit"
           isLoading={isLoading || isFetching}
+          bg="inherit"
           onClick={() => {
             setEnabled(true)
-            toast({
-              title: 'Fetching posts data',
-              description: 'please wait...',
-              status: 'info',
-              duration: 3000,
-              isClosable: true,
-              onCloseComplete() {
-                setEnabled(false)
-              },
-            })
           }}
         >
           Fetch Posts
@@ -54,4 +68,4 @@ const AppHeader = () => {
   )
 }
 
-export default memo(AppHeader)
+export default AppHeader

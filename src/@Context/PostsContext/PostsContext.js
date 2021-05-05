@@ -1,12 +1,12 @@
 import { useState, createContext } from 'react'
 
-export const PostsContext = createContext([])
+export const PostsContext = createContext()
 
 const Provider = ({ children }) => {
-  const [posts, setPosts] = useState([])
+  const [postsContext, setPostsContext] = useState({data: [], page: 1})
 
   return (
-    <PostsContext.Provider value={[posts, setPosts]}>
+    <PostsContext.Provider value={[postsContext, setPostsContext]}>
       {children}
     </PostsContext.Provider>
   )

@@ -1,11 +1,14 @@
-import { memo, useContext } from 'react'
-import { Grid } from '@chakra-ui/react'
+import React from 'react'
+import { useContext } from 'react'
+import { Grid, Button, Flex } from '@chakra-ui/react'
 import { PostsContext } from '@Context'
+import Observer from '@researchgate/react-intersection-observer'
 import { Post } from './components'
 
 const Posts = () => {
-  const [posts] = useContext(PostsContext)
-  if (!posts.length) {
+  const [postsContext, setPostsContext] = useContext(PostsContext)
+
+  if (!postsContext.data.length) {
     return null
   }
   return (
@@ -15,7 +18,7 @@ const Posts = () => {
       flexDirection={['column', 'column', 'column', 'row']}
       display={['flex', 'flex', 'flex', 'grid']}
     >
-      {posts.map((post, i) => (
+      {postsContext.data.map((post, i) => (
         <Post
           key={i}
           id={post.id}
@@ -25,8 +28,17 @@ const Posts = () => {
           archived={post.archived}
         />
       ))}
+      <Observer
+        onChange={({ isIntersecting }) => {
+          if (isIntersecting) {
+            setPostsContext({ ...postsContext, page: postsContext.page + 1 })
+          }
+        }}
+      >
+        <Flex justify="center" align="center" bg="purple.500" />
+      </Observer>
     </Grid>
   )
 }
 
-export default memo(Posts)
+export default Posts
