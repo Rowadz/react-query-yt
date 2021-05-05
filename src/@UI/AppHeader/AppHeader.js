@@ -25,25 +25,25 @@ const AppHeader = () => {
 
   useEffect(() => {
     if (data) {
-      setPostsContext({
+      setPostsContext((prev) => ({
         ...postsContext,
         // data,
         data: [...postsContext.data, ...data],
-      })
+      }))
     }
   }, [data, setPostsContext])
 
   useEffect(() => {
     if (isLoading || isFetching) {
+      setPostsContext((prev) => ({ ...prev, loading: true }))
       toast({
         title: 'Fetching posts data',
         description: 'please wait...',
         status: 'info',
-        duration: 3000,
-        onCloseComplete() {
-          // setEnabled(false)
-        },
+        duration: 2000,
       })
+    } else {
+      setPostsContext((prev) => ({ ...prev, loading: false }))
     }
   }, [isLoading, isFetching])
 

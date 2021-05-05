@@ -30,7 +30,7 @@ const Posts = () => {
       ))}
       <Observer
         onChange={({ isIntersecting }) => {
-          if (isIntersecting) {
+          if (isIntersecting && !postsContext.loading) {
             setPostsContext({ ...postsContext, page: postsContext.page + 1 })
           }
         }}
