@@ -3,21 +3,21 @@ import { Button, Flex, Heading, useToast } from '@chakra-ui/react'
 import { PostsContext } from '@Context'
 import { useQuery } from 'react-query'
 import { API_URL } from 'app/constants'
+import { PostAdder } from '@UI'
 
 const AppHeader = () => {
   const [enabled, setEnabled] = useState(false)
   const [postsContext, setPostsContext] = useContext(PostsContext)
-  console.log({ postsContext })
   const toast = useToast()
   const { isLoading, isFetching, data } = useQuery(
     ['fetchPosts', postsContext.page],
     ({ queryKey }) => {
       const [, page] = queryKey
-      console.log(queryKey)
       return fetch(`${API_URL}/posts?_limit=10&_page=${page}`)
         .then((res) => res.json())
         .finally(() => setEnabled(false))
-    }
+    },
+    { refetchOnWindowFocus: false }
     // { keepPreviousData: false }
     // { enabled: true }
     // { refetchInterval: 1000 }
@@ -54,6 +54,7 @@ const AppHeader = () => {
       </Flex>
       <Flex flexGrow="1" />
       <Flex>
+        <PostAdder />
         <Button
           isLoading={isLoading || isFetching}
           bg="inherit"
