@@ -11,6 +11,7 @@ const AppHeader = () => {
   const toast = useToast()
   const { isLoading, isFetching, data } = useQuery(
     ['fetchPosts', postsContext.page],
+    // ['fetchPosts', postsContext.page, postsContext.reFetch],
     ({ queryKey }) => {
       const [, page] = queryKey
       return fetch(`${API_URL}/posts?_limit=10&_page=${page}`)
@@ -26,9 +27,9 @@ const AppHeader = () => {
   useEffect(() => {
     if (data) {
       setPostsContext((prev) => ({
-        ...postsContext,
+        ...prev,
         // data,
-        data: [...postsContext.data, ...data],
+        data: [...prev.data, ...data],
       }))
     }
   }, [data, setPostsContext])

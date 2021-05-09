@@ -26,6 +26,8 @@ const Posts = () => {
           image={post.image}
           fullName={post.fullName}
           archived={post.archived}
+          postsContext={postsContext}
+          setPostsContext={setPostsContext}
         />
       ))}
       <Observer

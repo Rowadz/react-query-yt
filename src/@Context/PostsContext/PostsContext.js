@@ -7,6 +7,7 @@ const Provider = ({ children }) => {
     data: [],
     page: 1,
     loading: false,
+    // reFetch: false,
   })
 
   return (

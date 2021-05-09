@@ -1,7 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { useMutation } from 'react-query'
 import {
-  useToast,
   Button,
   Drawer,
   Input,
@@ -14,54 +12,13 @@ import {
   DrawerHeader,
   DrawerCloseButton,
 } from '@chakra-ui/react'
-import { API_URL } from 'app/constants'
+import { useCreatePost } from '@hooks'
 
 const PostAdder = () => {
   const [state, setState] = useState({ fullName: '', body: '' })
-  const {
-    data,
-    isError,
-    isIdle,
-    isLoading,
-    isPaused,
-    isSuccess,
-    mutate,
-    mutateAsync,
-    status,
-  } = useMutation(
-    () => {
-      return fetch(`${API_URL}/posts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(state),
-      })
-    },
-    {
-      mutationKey: 'creatingPost',
-      onMutate() {
-        toast({
-          title: 'Creating your post',
-          description: 'please wait...',
-          status: 'info',
-        })
-      },
-      onSuccess() {
-        toast.closeAll()
-        toast({
-          title: 'Done!',
-          description: 'Your post have been created',
-          status: 'success',
-          duration: 1000,
-        })
-      },
-    }
-  )
-
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { mutateAsync } = useCreatePost(state)
   const btnRef = useRef()
-  const toast = useToast()
 
   return (
     <>
