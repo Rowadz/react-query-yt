@@ -3,7 +3,8 @@ import { Button, Flex, Heading, useToast } from '@chakra-ui/react'
 import { PostsContext } from '@Context'
 import { useQuery } from 'react-query'
 import { API_URL } from 'app/constants'
-import { PostAdder } from '@UI'
+import axios from 'axios'
+import { PostAdder, Login } from '@UI'
 
 const AppHeader = () => {
   const [enabled, setEnabled] = useState(false)
@@ -12,13 +13,27 @@ const AppHeader = () => {
   const { isLoading, isFetching, data } = useQuery(
     ['fetchPosts', postsContext.page],
     // ['fetchPosts', postsContext.page, postsContext.reFetch],
-    ({ queryKey }) => {
+    async ({ queryKey }) => {
       const [, page] = queryKey
-      return fetch(`${API_URL}/posts?_limit=10&_page=${page}`)
-        .then((res) => res.json())
-        .finally(() => setEnabled(false))
+      const response = await fetch(
+        `${API_URL}/posts?_limit=10&_page=${page}`
+      ).finally(() => setEnabled(false))
+
+      if (response.status === 401) {
+        throw new Error('User not authenticated')
+      }
+      return response.json()
     },
-    { refetchOnWindowFocus: false }
+    {
+      refetchOnWindowFocus: false,
+      onError(error) {
+        toast({
+          title: error.message,
+          status: 'error',
+          duration: 2000,
+        })
+      },
+    }
     // { keepPreviousData: false }
     // { enabled: true }
     // { refetchInterval: 1000 }
@@ -55,8 +70,11 @@ const AppHeader = () => {
       </Flex>
       <Flex flexGrow="1" />
       <Flex>
+        <Login />
         <PostAdder />
         <Button
+          ml="1"
+          mr="1"
           isLoading={isLoading || isFetching}
           bg="inherit"
           onClick={() => {
